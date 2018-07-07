@@ -7,11 +7,13 @@ This plugin is heavily inspired, and in-part, a part of the [original `alternati
 ```ruby
 alternatives 'vim' do
   path '/usr/bin/nvim'
+  link '/usr/bin/vim'
 end
 ```
 
 ```ruby
 alternatives 'pinentry' do
   auto true
+  link '/usr/bin/pinentry'
 end
 ```
