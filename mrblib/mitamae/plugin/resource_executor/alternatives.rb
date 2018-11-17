@@ -5,25 +5,23 @@ module ::MItamae
         Error = Class.new(StandardError)
 
         def apply
+          run_command([
+            "update-alternatives", "--install",
+            desired.link,
+            desired.name,
+            desired.path,
+            desired.priority
+          ])
+
           if desired.auto
-            if !current.auto
-              run_command(["update-alternatives", "--auto", desired.name])
-            end
-          elsif current.exists
-            if current.auto || desired.path != current.path
+            run_command(["update-alternatives", "--auto", desired.name])
+          else
+            if desired.path != current.path
               run_command([
                 "update-alternatives", "--set", desired.name,
                 desired.path,
               ])
             end
-          else
-            run_command([
-              "update-alternatives", "--install",
-              desired.link,
-              desired.name,
-              desired.path,
-              desired.priority
-            ])
           end
         end
 
@@ -70,10 +68,10 @@ module ::MItamae
         private
 
         def alternative_exists?
-          run_command(
+          !(Regexp.compile(attributes.path) =~ run_command(
             "update-alternatives --list #{attributes.name}",
             error: false
-          ).success?
+          ).stdout).nil?
         end
 
         def parse_entry(entry)
